@@ -256,7 +256,14 @@ return [
         'updated_at' => '更新日',
         'username' => 'ユーザー名',
         'year' => '年',
-        'memo' => 'メモ' //追加しました
+        'memo' => 'メモ', //追加しました
+        'kana' => 'カナ',
+        'tel' => '電話番号',
+        'email' => 'メールアドレス',
+        'postcode' => '郵便番号',
+        'address' => '住所',
+        'birthday' => '誕生日',
+        'gender' => '性別'
     ],
 
 ];
