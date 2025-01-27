@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use App\Models\Order;
 use Illuminate\Support\Facades\DB;
-
+use App\Services\AnalysisService;
+use App\Services\DecileService;
 
 class AnalysisController extends Controller
 {
@@ -16,18 +17,20 @@ class AnalysisController extends Controller
         $subQuery = Order::betweenDate($request->startDate, $request->endDate);
 
         if ($request->type === 'perDay') {
-            $subQuery->where('status', true)
-                ->groupBy('id')
-                ->selectRaw('id, sum(subtotal) as totalPerPurchase, DATE_FORMAT(created_at,"%Y%m%d") as date');
-
-            $data = DB::table($subQuery)
-                ->groupBy('date')
-                ->selectRaw('date, sum(totalPerPurchase) as total')
-                ->get();
+            list($data, $labels, $totals) = AnalysisService::perDay($subQuery);
         }
 
-        $labels = $data->pluck('date');
-        $totals = $data->pluck('total');
+        if ($request->type === 'perMonth') {
+            list($data, $labels, $totals) = AnalysisService::perMonth($subQuery);
+        }
+
+        if ($request->type === 'perYear') {
+            list($data, $labels, $totals) = AnalysisService::perYear($subQuery);
+        }
+
+        if ($request->type === 'decile') {
+            list($data, $labels, $totals) = DecileService::decile($subQuery);
+        }
 
 
         //Ajax通信のなのでjsonで返却する必要がある
